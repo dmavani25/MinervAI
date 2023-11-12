@@ -44,7 +44,7 @@ class ProfessorAgent:
     def __init__(self):
         self.lecture_notes = None
         self.kernel = sk.Kernel()
-        self.kernel.add_chat_service("chat-gpt", OpenAIChatCompletion("gpt-3.5-turbo-16k", api_key, org_id))
+        self.kernel.add_chat_service("chat-gpt", OpenAIChatCompletion("gpt-4-1106-preview", api_key, org_id))
 
     def upload_lecture_notes(self, notes):
         self.lecture_notes = notes
@@ -67,7 +67,7 @@ class StudentAgent:
         
         #initialize kernel
         self.kernel = sk.Kernel()
-        self.kernel.add_chat_service("chat-gpt", OpenAIChatCompletion("gpt-3.5-turbo", api_key, org_id))
+        self.kernel.add_chat_service("chat-gpt", OpenAIChatCompletion("gpt-4-1106-preview", api_key, org_id))
 
 
     async def generate_questions(self, lecture_content):
@@ -89,7 +89,7 @@ class StudentAgent:
 class GeneralAgent:
     def __init__(self):
         self.kernel = sk.Kernel()
-        self.kernel.add_chat_service("chat-gpt", OpenAIChatCompletion("gpt-3.5-turbo", api_key, org_id))
+        self.kernel.add_chat_service("chat-gpt", OpenAIChatCompletion("gpt-4-1106-preview", api_key, org_id))
     
     async def generate_summary(self, qa_map):
         return self.kernel.create_semantic_function(f"""Give a succinct summary of overall and student wise analysis of types, kinds and frequencies of questions asked as per the data in the following map containing questions, answers, and students who asked the questions: {qa_map}.""")()
@@ -193,10 +193,6 @@ async def simulate_classroom(content=load("sample.txt")):
     }
     print(result_json)
 
-
-    for qna_pair in qna_json_list:
-        print("QUESTION: ", qna_pair["question"])
-        print("ANSWER: ", qna_pair["answer"])
 
     # Record end time
     end_time = time.time()
