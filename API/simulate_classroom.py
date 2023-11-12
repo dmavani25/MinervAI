@@ -98,7 +98,7 @@ class GeneralAgent:
         return self.kernel.create_semantic_function(f"""Give a succinct summary of overall and student wise analysis of types, kinds and frequencies of questions asked as per the data in the following map containing questions, answers, and students who asked the questions: {qa_map}.""")()
 
     async def get_personality(self, myString):
-        return self.kernel.create_semantic_function(f"""Give 5 words that describe a student with the following background and retention rates where retention rate describes fraction of information that a student learns from a lecture. {myString}""")()
+        return self.kernel.create_semantic_function(f"""Give 5 words seperated by commas that describe a student with the following background and retention rates where retention rate describes fraction of information that a student learns from a lecture. {myString}""")()
 
 # Define a coroutine to simulate a lecture session
 async def simulate_lecture(lecture, lecture_index, professor, students):
