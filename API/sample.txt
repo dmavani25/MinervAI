@@ -119,8 +119,3 @@ $GL(n, \mathbb{R})$ and $SL(n, \mathbb{R})$ are examples of Lie groups, because 
             \item Let $a \in H$, let $a {a_{H}}^{-1} = e_H = e$, so $a^{-1}_H = a^{-1}$.
         \end{enumerate}
 
-
-
-==========
-
-No Quiz Today.

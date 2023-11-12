@@ -80,7 +80,7 @@ class StudentAgent:
         lecture_content = new_lecture_content
 
 
-        return self.kernel.create_semantic_function(f"""As a student, you went through the following {lecture_content}: Pretend that you are a student with educational background of {self.educational_background}, and have likelihood to ask question of {self.question_rate}. Pretend to be the student described above learning from this lecture, state one clarifying question you have about this lecture, and do not state anything other than the question. If you do not want to ask a question respond by saying -1""",max_tokens=120,temperature=0.5)()
+        return self.kernel.create_semantic_function(f"""As a student, you went through the following {lecture_content}: Pretend that you are a student with educational background of {self.educational_background}, and have likelihood to ask question of {self.question_rate}. Pretend to be the student described above learning from this lecture, state one clarifying question you have about this lecture and explain to the professor which part of the lecture your confusion originated from, and do not state anything other than the question. If you do not want to ask a question respond by saying -1""",max_tokens=120,temperature=0.5)()
 
     async def discuss_with_peer(self, peer, lecture_content):
         # This function simulates discussion between two students
@@ -167,19 +167,14 @@ async def simulate_classroom(content=load("sample.txt")):
     # Create Professor and Student Agents
     professor = ProfessorAgent()
     students = [StudentAgent(0.5, "25%", "really smart liberal arts students studying anthropology"),
-                StudentAgent(0.8, "80%", "engineering"),
-                StudentAgent(0.95, "100%", "research in math"),
-                StudentAgent(0.7, "80%", "physics"),
                 StudentAgent(0.2, "40%", "art history"),
                 StudentAgent(0.3, "50%", "political science"),
                 StudentAgent(0.8, "80%", "engineering"),
                 StudentAgent(0.8, "99%", "research in statistics")]
 
-    splitOnSignQuizzes = "=========="
-    lecturesString, quizzes = content.split(splitOnSignQuizzes)
 
     splitOnSignLectures = "----------"
-    lectures = lecturesString.split(splitOnSignLectures)
+    lectures = content.split(splitOnSignLectures)
     lecture_json_list = []
 
     qna_json_list = []
@@ -197,6 +192,11 @@ async def simulate_classroom(content=load("sample.txt")):
         "summary": summary.result  # Replace with an actual summary if available
     }
     print(result_json)
+
+
+    for qna_pair in qna_json_list:
+        print("QUESTION: ", qna_pair["question"])
+        print("ANSWER: ", qna_pair["answer"])
 
     # Record end time
     end_time = time.time()
