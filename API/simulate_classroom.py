@@ -38,7 +38,7 @@ class ProfessorAgent:
     def __init__(self):
         self.lecture_notes = None  # Initialize lecture_notes attribute to None
         self.kernel = sk.Kernel()  # Initialize a semantic kernel
-        self.kernel.add_chat_service("chat-gpt", OpenAIChatCompletion("gpt-4-1106-preview", api_key, org_id))  # Add OpenAI chat service to the kernel
+        self.kernel.add_chat_service("chat-gpt", OpenAIChatCompletion("gpt-3.5-turbo", api_key, org_id))  # Add OpenAI chat service to the kernel
 
     # Method to upload lecture notes
     def upload_lecture_notes(self, notes):
@@ -80,7 +80,7 @@ class StudentAgent:
         lecture_content = new_lecture_content  # Update lecture content
 
         # Create and execute a semantic function to generate questions
-        return self.kernel.create_semantic_function(f"""As a student, you went through the following {lecture_content}: Pretend that you are a student with educational background of {self.educational_background}, and have likelihood to ask question of {self.question_rate}. Pretend to be the student described above learning from this lecture, state one clarifying question you have about this lecture and explain to the professor which part of the lecture your confusion originated from, and do not state anything other than the question. If you do not want to ask a question respond by saying -1""", max_tokens=120, temperature=0.5)()
+        return self.kernel.create_semantic_function(f"""As a student, you went through the following {lecture_content}: Pretend that you are a student with educational background of {self.educational_background}, and have likelihood to ask question of {self.question_rate}. Pretend to be the student described above learning from this lecture, state one succinct clarifying question you have about this lecture and explain to the professor which part of the lecture your confusion originated from, and do not state anything other than the question. If you do not want to ask a question respond by saying -1""", max_tokens=200, temperature=0.5)()
 
     # Method stub for discuss_with_peer (not implemented)
     async def discuss_with_peer(self, peer, lecture_content):
@@ -96,6 +96,9 @@ class GeneralAgent:
     async def generate_summary(self, qa_map):
         # Create and execute a semantic function to generate a summary
         return self.kernel.create_semantic_function(f"""Give a succinct summary of overall and student wise analysis of types, kinds and frequencies of questions asked as per the data in the following map containing questions, answers, and students who asked the questions: {qa_map}.""")()
+
+    async def get_personality(self, myString):
+        return self.kernel.create_semantic_function(f"""Give 5 words that describe a student with the following background and retention rates where retention rate describes fraction of information that a student learns from a lecture. {myString}""")()
 
 # Define a coroutine to simulate a lecture session
 async def simulate_lecture(lecture, lecture_index, professor, students):
@@ -180,9 +183,18 @@ async def simulate_classroom(content=load("sample.txt")):
     summary = await general_agent.generate_summary(qna_json_list)  # Generate a summary of Q&A
 
     # Construct the final JSON object with lecture content and summary
+    
+    student_list = []
+    
+    for student in students:
+        myString = f"""Background {student.educational_background} ; Retention Rate: {student.retention_rate}"""
+        newString = await general_agent.get_personality(myString)
+        student_list.append(newString.result)
+        
     result_json = {
         "lectures": lecture_json_list,
-        "summary": summary.result  # Include the summary in the result
+        "summary": summary.result, # Include the summary in the result
+        "students": student_list
     }
     print(result_json)  # Print the result JSON
 
